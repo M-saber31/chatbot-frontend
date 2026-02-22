@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+package-lock.json
+
+# Next.js build output
+.next/
+out/
+
+# Environment variables
+.env.local
+.env.*.local
+
+# IDEs and editors
+.idea/
+.vscode/
+.vscode/launch.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
