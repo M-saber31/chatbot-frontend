@@ -48,7 +48,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [messageList, setMessageList] = useState<IChatItem[]>([]);
   const [isResponding, setIsResponding] = useState(false);
-  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState("");
 
 
 
@@ -59,7 +59,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
 
   const newThread = () => {
     setMessageList([]);
-    setSessionId(crypto.randomUUID());
+    setSessionId("");
     deleteAllCookies();
   };
 
@@ -90,7 +90,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sessionId, message }),
+        body: JSON.stringify(sessionId ? { sessionId, message } : { message }),
       });
 
       // Log out the response status in case there’s an error
@@ -135,11 +135,12 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
     let accumulatedContent = "";
     let isStreaming = true;
     let buffer = "";
+    let currentEvent = "";
 
     // Create a reader for the SSE stream
     const reader = stream.getReader();
     const decoder = new TextDecoder();
-    
+
     const readStream = async () => {
       while (true) {
         const { done, value } = await reader.read();
@@ -162,6 +163,13 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
 
           console.log("[ChatClient] SSE line:", chunk); // log each line we extract
 
+          // Track the SSE event type declared on "event:" lines
+          if (chunk.startsWith("event: ")) {
+            currentEvent = chunk.slice(7).trim();
+            boundary = buffer.indexOf("\n");
+            continue;
+          }
+
           if (chunk.startsWith("data: ")) {
             // Attempt to parse JSON
             const jsonStr = chunk.slice(6);
@@ -174,7 +182,15 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
               continue;
             }
 
-            console.log("[ChatClient] Parsed SSE event:", data);
+            console.log("[ChatClient] Parsed SSE event:", currentEvent, data);
+
+            // Capture backend-assigned session ID on first response
+            if (currentEvent === "session" && data.sessionId) {
+              console.log("[ChatClient] Session ID from backend:", data.sessionId);
+              setSessionId(data.sessionId);
+              boundary = buffer.indexOf("\n");
+              continue;
+            }
 
             if (data.error) {
               if (!chatItem) {
