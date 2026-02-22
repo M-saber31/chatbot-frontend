@@ -52,6 +52,15 @@ export async function POST(request: NextRequest) {
   console.log("[proxy] Backend responded with status:", upstream.status, upstream.statusText);
   console.log("[proxy] Backend Content-Type:", upstream.headers.get("Content-Type"));
 
+  if (!upstream.ok) {
+    const errorBody = await upstream.text();
+    console.error("[proxy] Backend error body:", errorBody);
+    return new NextResponse(errorBody, {
+      status: upstream.status,
+      headers: { "Content-Type": upstream.headers.get("Content-Type") ?? "application/json" },
+    });
+  }
+
   return new NextResponse(upstream.body, {
     status: upstream.status,
     headers: {
