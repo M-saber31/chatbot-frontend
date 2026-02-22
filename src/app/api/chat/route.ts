@@ -7,7 +7,7 @@ import { type NextRequest, NextResponse } from "next/server";
  * Otherwise returns a minimal SSE stream_end event so the UI doesn't hang.
  *
  * Set CHAT_API_URL in .env.local to point at your backend, e.g.:
- *   CHAT_API_URL=http://localhost:50505/chat
+ *   CHAT_API_URL=http://localhost:5000/api/chat
  */
 export async function POST(request: NextRequest) {
   const chatApiUrl = process.env.CHAT_API_URL;

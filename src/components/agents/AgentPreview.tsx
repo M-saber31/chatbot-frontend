@@ -48,6 +48,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [messageList, setMessageList] = useState<IChatItem[]>([]);
   const [isResponding, setIsResponding] = useState(false);
+  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
 
 
 
@@ -58,6 +59,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
 
   const newThread = () => {
     setMessageList([]);
+    setSessionId(crypto.randomUUID());
     deleteAllCookies();
   };
 
@@ -82,22 +84,13 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
     setMessageList((prev) => [...prev, userMessage]);
 
     try {
-      const messages = [...messageList, userMessage].map((item) => ({
-        role: item.role,
-        content: item.content,
-      }));
-      const postData = {messages};
-      // IMPORTANT: Add credentials: 'include' if server cookies are critical
-      // and if your backend is on the same domain or properly configured for cross-site cookies.
-
-      setIsResponding(true);      
+      setIsResponding(true);
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(postData),
-        credentials: "include", // <--- allow cookies to be included
+        body: JSON.stringify({ sessionId, message }),
       });
 
       // Log out the response status in case there’s an error
