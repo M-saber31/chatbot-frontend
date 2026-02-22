@@ -226,9 +226,18 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
                 );
               }
 
+              // Log the full raw shape so we can see exactly what the backend sends
+              console.log("[ChatClient] Full chunk data:", JSON.stringify(data));
+
+              // Extract text from whichever field the backend uses
+              const chunkText: string =
+                typeof data === "string"
+                  ? data
+                  : (data.content ?? data.delta ?? data.text ?? data.message ?? data.token ?? "");
+
               if (data.type === "completed_message") {
                 clearAssistantMessage(chatItem);
-                accumulatedContent = data.content;
+                accumulatedContent = chunkText;
                 isStreaming = false;
                 console.log(
                   "[ChatClient] Received completed message:",
@@ -237,10 +246,10 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
 
                 setIsResponding(false);
               } else {
-                accumulatedContent += data.content;
+                accumulatedContent += chunkText;
                 console.log(
                   "[ChatClient] Received streaming chunk:",
-                  data.content
+                  chunkText
                 );
               }
 
