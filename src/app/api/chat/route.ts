@@ -12,8 +12,10 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   const chatApiUrl = process.env.CHAT_API_URL;
 
+  console.log("[proxy] CHAT_API_URL =", chatApiUrl ?? "(not set — using stub)");
+
   if (!chatApiUrl) {
-    // Stub response — no backend configured
+    console.log("[proxy] No CHAT_API_URL configured, returning stub response.");
     const body = 'data: {"type":"stream_end"}\n\n';
     return new NextResponse(body, {
       status: 200,
@@ -25,14 +27,30 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // Proxy to the configured backend
-  const upstream = await fetch(chatApiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: await request.text(),
-  });
+  // Read and log the body before forwarding
+  const requestBody = await request.text();
+  console.log("[proxy] Forwarding to:", chatApiUrl);
+  console.log("[proxy] Request body:", requestBody);
+
+  let upstream: Response;
+  try {
+    upstream = await fetch(chatApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: requestBody,
+    });
+  } catch (err) {
+    console.error("[proxy] Failed to reach backend:", err);
+    return new NextResponse(JSON.stringify({ error: "Backend unreachable", detail: String(err) }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  console.log("[proxy] Backend responded with status:", upstream.status, upstream.statusText);
+  console.log("[proxy] Backend Content-Type:", upstream.headers.get("Content-Type"));
 
   return new NextResponse(upstream.body, {
     status: upstream.status,
