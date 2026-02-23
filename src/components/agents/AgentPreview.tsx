@@ -214,8 +214,7 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
               // End of the stream
               console.log("[ChatClient] Stream end marker received.");
               setIsResponding(false);
-              
-              break;
+              return; // exit readStream entirely, not just the inner loop
             } 
             
             else {
@@ -261,6 +260,8 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
           boundary = buffer.indexOf("\n");
         }
       }
+      // Stream closed without an explicit stream_end event — ensure UI resets
+      setIsResponding(false);
     };
 
     // Catch errors from the stream reading process
