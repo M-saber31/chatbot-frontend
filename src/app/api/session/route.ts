@@ -42,13 +42,32 @@ export async function POST() {
     );
   }
 
-  console.log("[session] Backend responded with status:", response.status);
+  // Log status + all response headers for easier diagnosis
+  const responseHeaders: Record<string, string> = {};
+  response.headers.forEach((value, key) => { responseHeaders[key] = value; });
+  console.log("[session] Backend responded with status:", response.status, response.statusText);
+  console.log("[session] Backend response headers:", JSON.stringify(responseHeaders, null, 2));
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error("[session] Backend error body:", errorBody);
+    console.error("[session] Backend error body:", errorBody || "(empty)");
+    console.error("[session] Diagnosis: backend returned", response.status, "—",
+      response.status === 404
+        ? `route not found at ${sessionUrl}. Check the URL or that the C# endpoint is implemented.`
+        : response.status === 401 || response.status === 403
+        ? "authorization rejected. Check CHAT_API_TOKEN value."
+        : response.status === 405
+        ? "method not allowed. The endpoint may only accept GET, not POST."
+        : "see error body above."
+    );
     return NextResponse.json(
-      { error: "Failed to create session", detail: errorBody },
+      {
+        error: "Failed to create session",
+        status: response.status,
+        statusText: response.statusText,
+        detail: errorBody || "(empty response body)",
+        url: sessionUrl,
+      },
       { status: response.status }
     );
   }
