@@ -85,12 +85,30 @@ export function AgentPreview({ agentDetails }: IAgentPreviewProps): ReactNode {
 
     try {
       setIsResponding(true);
+
+      // On the first message of a thread, create a session via the backend
+      // session endpoint. The auth token is added server-side by /api/session.
+      let currentSessionId = sessionId;
+      if (!currentSessionId) {
+        console.log("[ChatClient] No session yet — requesting a new session...");
+        const sessionResponse = await fetch("/api/session", { method: "POST" });
+        if (!sessionResponse.ok) {
+          console.error("[ChatClient] Failed to create session:", sessionResponse.status, sessionResponse.statusText);
+          setIsResponding(false);
+          return;
+        }
+        const sessionData = await sessionResponse.json();
+        currentSessionId = sessionData.sessionId;
+        console.log("[ChatClient] Session created:", currentSessionId);
+        setSessionId(currentSessionId);
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(sessionId ? { sessionId, message } : { message }),
+        body: JSON.stringify({ sessionId: currentSessionId, message }),
       });
 
       // Log out the response status in case there’s an error

@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  const token = process.env.CHAT_API_TOKEN;
+
   // Read and log the body before forwarding
   const requestBody = await request.text();
   console.log("[proxy] Forwarding to:", chatApiUrl);
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: requestBody,
     });
