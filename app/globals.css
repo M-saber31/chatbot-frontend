@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer theme {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --copilot-kit-primary-color: #3b82f6;
+    --copilot-kit-primary-color-rgb: 59, 130, 245;
+    --copilot-kit-muted-color: #f3f4f6;
+    --copilot-kit-border-color: #e5e7eb;
+    --copilot-kit-muted-foreground: #6b7280;
+
+    color-scheme: light;
+
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.23 0.004 49.25);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.23 0.004 49.25);
+    --primary: oklch(0.59 0.15 246.71);
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(0.93 0.01 248);
+    --secondary-foreground: oklch(0.1 0.01 248);
+    --muted: oklch(0.96 0.004 49.25);
+    --muted-foreground: oklch(0.43 0.01 49.25);
+    --border: oklch(0.92 0.005 49.25);
+    --ring: oklch(0.59 0.15 246.71);
+    --sidebar-width: 280px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+
+      --background: oklch(0.147 0.004 49.25);
+      --foreground: oklch(0.98 0.001 49.25);
+      --card: oklch(0.16 0.004 49.25);
+      --card-foreground: oklch(0.98 0.001 49.25);
+      --muted: oklch(0.23 0.003 49.25);
+      --muted-foreground: oklch(0.70 0.01 49.25);
+      --border: oklch(0.23 0.003 49.25);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .copilot-kit-sidebar-window {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .copilot-kit-button {
+    transition: all 0.2s ease;
+  }
+
+  .copilot-kit-message {
+    margin: 0.5rem 0;
+  }
 }
