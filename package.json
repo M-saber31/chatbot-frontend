@@ -9,9 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ag-ui/client": "^0.0.47",
+    "@copilotkit/react-core": "^1.53.0",
+    "@copilotkit/react-ui": "^0.2.0",
+    "@copilotkit/runtime": "^1.53.0",
     "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -22,5 +26,10 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "ip": "^2.0.1",
+    "langsmith": "^0.3.40",
+    "prismjs": "^1.30.0"
   }
 }
