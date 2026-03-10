@@ -11,23 +11,21 @@ function HomeContent() {
   useCopilotAdditionalInstructions({ instructions: prompt });
 
   return (
-    <CopilotSidebar
-      defaultOpen
-      messageView={{ assistantMessage: { className: "copilot-assistant-message" } }}
-      labels={{
-        modalHeaderTitle: "Your Assistant",
-        welcomeMessageText: "Hi! How can I help you today?",
-        chatInputPlaceholder: "Ask me anything...",
-      }}
-    >
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
-        <main className="w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 grow">
-          {/* Your app content goes here */}
-        </main>
-        <Footer />
-      </div>
-    </CopilotSidebar>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <main className="w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 grow">
+        {/* Your app content goes here */}
+      </main>
+      <Footer />
+      <CopilotSidebar
+        defaultOpen
+        labels={{
+          modalHeaderTitle: "Your Assistant",
+          welcomeMessageText: "Hi! How can I help you today?",
+          chatInputPlaceholder: "Ask me anything...",
+        }}
+      />
+    </div>
   );
 }
 
