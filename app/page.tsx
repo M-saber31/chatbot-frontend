@@ -1,14 +1,20 @@
 "use client";
 
-import { CopilotSidebar } from "@copilotkit/react-core/v2";
-import { useCopilotAdditionalInstructions } from "@copilotkit/react-core";
+import { CopilotSidebar,useConfigureSuggestions } from "@copilotkit/react-core/v2";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { prompt } from "../lib/prompt";
 import { Suspense } from "react";
 
 function HomeContent() {
-  useCopilotAdditionalInstructions({ instructions: prompt });
+  useConfigureSuggestions({
+    suggestions: [
+      { title: "Explain a concept", message: "Can you explain a concept I'm struggling with?" },
+      { title: "Summarize", message: "Summarize the current topic for me." },
+      { title: "Quiz me", message: "Quiz me on what we've discussed." },
+      { title: "Help", message: "What can you help me with?" },
+    ],
+    available: "always",
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
